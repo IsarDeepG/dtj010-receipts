@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTJ010 · Leave & License receipts</title>
+<style>
+  :root { --ink:#1c1917; --muted:#6b635c; --line:#e4ddd4; --paper:#f7f4ef; --card:#fffdfb; --brass:#8a5a2b; --ok:#1f6b45; --ok-soft:#e7f4ec; --late:#8d2f2f; --late-soft:#f8e8e6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Georgia, serif; color:var(--ink); background:var(--paper); }
+  header, main { max-width:980px; margin:0 auto; padding:28px 22px; }
+  main { padding-top:0; }
+  .kicker { font-family:sans-serif; letter-spacing:.16em; text-transform:uppercase; font-size:11px; color:var(--brass); }
+  h1 { font-weight:500; font-size:32px; margin:8px 0 0; }
+  .sub { color:var(--muted); }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .card span { font-family:sans-serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .card strong { display:block; margin-top:6px; font-size:22px; font-weight:560; }
+  .card em { display:block; margin-top:4px; font-style:normal; color:var(--muted); font-size:13px; font-family:sans-serif; }
+  .wide { grid-column:span 2; }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; }
+  th { font-family:sans-serif; font-size:11px; text-transform:uppercase; color:var(--muted); }
+  .num { text-align:right; }
+  .pill { padding:2px 8px; border-radius:999px; font-family:sans-serif; font-size:12px; }
+  .ok { background:var(--ok-soft); color:var(--ok); }
+  .late { background:var(--late-soft); color:var(--late); }
+  .wait { background:#eeeae4; color:#5c564f; }
+  .bar { height:8px; background:#efeae3; border-radius:99px; overflow:hidden; margin-top:10px; }
+  .bar i { display:block; height:100%; background:var(--brass); }
+  .admin { display:none; background:var(--ink); color:#f7f4ef; border-radius:16px; padding:16px; margin-top:22px; }
+  .fields { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  label { font-family:sans-serif; font-size:12px; color:#d9d0c6; }
+  input, button { font:inherit; border-radius:10px; border:1px solid #3c3834; background:#2a2623; color:#f7f4ef; padding:8px 10px; width:100%; }
+  button { width:auto; background:#f3ebe3; color:var(--ink); border:0; cursor:pointer; }
+  .note { font-family:sans-serif; color:var(--muted); font-size:13px; }
+  @media (max-width:800px) { .grid, .fields { grid-template-columns:1fr; } .wide { grid-column:auto; } }
+</style>
+</head>
+<body>
+<header>
+  <p class="kicker">Leave & License · DTJ010</p>
+  <h1>Receipts for unit DTJ010</h1>
+  <p class="sub">DLF Towers B, Ground Floor, Jasola District Centre, New Delhi 110025 · 672 sq. ft.</p>
+</header>
+<main>
+  <div class="grid" id="cards"></div>
+  <section>
+    <h2>How the total is made</h2>
+    <div class="card"><div class="bar"><i id="bar"></i></div><p class="note" id="summary"></p></div>
+  </section>
+  <section>
+    <h2>Licence months</h2>
+    <div style="overflow:auto"><table><thead><tr><th>Month</th><th>Period</th><th>Due on</th><th class="num">Licence fee</th><th class="num">Maintenance</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="note">Licence fee is Rs 58,000 a month plus GST as applicable. Maintenance is Rs 10,577 a month plus GST. Security is two months’ licence fee, interest-free. First payment was due on or before 10 September 2026; later months are due on or before the 7th.</p>
+  </section>
+  <section class="admin" id="admin">
+    <h2>Admin</h2>
+    <p>Only this view edits the figures. Copy the client link to share a read-only snapshot. Do not send the admin link.</p>
+    <div class="fields">
+      <div><label>Security deposit received (Rs)</label><input id="securityReceived" type="number" min="0" step="1"></div>
+      <div><label>One month advance received (Rs)</label><input id="advanceReceived" type="number" min="0" step="1"></div>
+      <div><label>Maintenance received (Rs)</label><input id="maintenanceReceived" type="number" min="0" step="1"></div>
+      <div><label>Extra amount (Rs)</label><input id="extra" type="number" min="0" step="1"></div>
+      <div><label>Licence fee received, all months (Rs)</label><input id="rentReceived" type="number" min="0" step="1"></div>
+      <div><label>Note for the client view</label><input id="note" type="text" maxlength="180"></div>
+    </div>
+    <p><button type="button" id="save">Update client link</button> <button type="button" id="copy">Copy client link</button></p>
+    <p class="note" id="adminMsg"></p>
+  </section>
+</main>
+<script>
+const AGREEMENT = { day:"8 September 2026", fee:58000, maintenance:10577, security:116000, advance:58000, licensee:"Goertrip Travels Private Limited", licensor:"Isar Deep Gangwani and Lalimma Gangwani" };
+const MONTHS = [["2026-09-10","2026-10-09","2026-09-10"],["2026-10-10","2026-11-09","2026-10-07"],["2026-11-10","2026-12-09","2026-11-07"],["2026-12-10","2027-01-09","2026-12-07"],["2027-01-10","2027-02-09","2027-01-07"],["2027-02-10","2027-03-09","2027-02-07"],["2027-03-10","2027-04-09","2027-03-07"],["2027-04-10","2027-05-09","2027-04-07"],["2027-05-10","2027-06-09","2027-05-07"],["2027-06-10","2027-07-09","2027-06-07"],["2027-07-10","2027-08-09","2027-07-07"]];
+const inr = n => "Rs " + Math.round(Number(n)||0).toLocaleString("en-IN");
+const fmt = iso => new Date(iso+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+function load(){ const raw=location.hash.replace(/^#/,""); const blank={securityReceived:0,advanceReceived:0,maintenanceReceived:0,extra:0,rentReceived:0,note:""}; if(!raw) return blank; try { return Object.assign(blank, JSON.parse(decodeURIComponent(raw))); } catch(e){ return blank; } }
+function render(){
+  const s=load(); const today=new Date().toISOString().slice(0,10);
+  const dueMonths=MONTHS.filter(m=>m[2]<=today).length;
+  const expectedMaint=AGREEMENT.maintenance*dueMonths, expectedRent=AGREEMENT.fee*dueMonths;
+  const expected=AGREEMENT.security+AGREEMENT.advance+expectedMaint+expectedRent;
+  const received=Number(s.securityReceived)+Number(s.advanceReceived)+Number(s.maintenanceReceived)+Number(s.extra)+Number(s.rentReceived);
+  const gap=expected-received; const next=MONTHS.find(m=>m[2]>=today);
+  document.getElementById("cards").innerHTML=[["Day of agreement",AGREEMENT.day,AGREEMENT.licensor+" to "+AGREEMENT.licensee],["Total amount received",inr(received),gap>0?inr(gap)+" short of dues to date":"Dues to date covered"],["Security deposit · 2 months",inr(s.securityReceived),"Expected "+inr(AGREEMENT.security)],["One month advance",inr(s.advanceReceived),"Expected "+inr(AGREEMENT.advance)],["Maintenance received",inr(s.maintenanceReceived),"Expected to date "+inr(expectedMaint)],["Extra amount",inr(s.extra),s.note||"Not part of the licence fee"],["Licence fee received",inr(s.rentReceived),"Expected to date "+inr(expectedRent)],["Next due",next?fmt(next[2]):"Term ends 9 Aug 2027",next?fmt(next[0])+" to "+fmt(next[1]):"Handover back on 9 Aug 2027"]].map((c,i)=>`<article class="card${i<2?" wide":""}"><span>${c[0]}</span><strong>${c[1]}</strong><em>${c[2]}</em></article>`).join("");
+  document.getElementById("bar").style.width=Math.max(0,Math.min(100,expected?(received/expected)*100:0))+"%";
+  document.getElementById("summary").textContent="Total received is security + one month advance + maintenance received + extra + licence fee received. Expected to date uses "+dueMonths+" licence month"+(dueMonths===1?"":"s")+" whose due date has passed, plus the deposit and the advance.";
+  document.getElementById("rows").innerHTML=MONTHS.map((m,i)=>{ const status=m[2]>today?["wait","Not yet due"]:(Number(s.rentReceived)>=AGREEMENT.fee*(i+1)?["ok","Covered in total"]:["late","Due"]); return `<tr><td>${i+1}</td><td>${fmt(m[0])} – ${fmt(m[1])}</td><td>${fmt(m[2])}</td><td class="num">${inr(AGREEMENT.fee)}</td><td class="num">${inr(AGREEMENT.maintenance)}</td><td><span class="pill ${status[0]}">${status[1]}</span></td></tr>`; }).join("");
+  ["securityReceived","advanceReceived","maintenanceReceived","extra","rentReceived","note"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=s[id]||(id==="note"?"":0); });
+}
+function snapshot(){ const s={securityReceived:Number(document.getElementById("securityReceived").value)||0,advanceReceived:Number(document.getElementById("advanceReceived").value)||0,maintenanceReceived:Number(document.getElementById("maintenanceReceived").value)||0,extra:Number(document.getElementById("extra").value)||0,rentReceived:Number(document.getElementById("rentReceived").value)||0,note:document.getElementById("note").value||""}; const hash=encodeURIComponent(JSON.stringify(s)); history.replaceState(null,"",location.pathname+"?admin=1#"+hash); render(); return location.origin+location.pathname+"#"+hash; }
+if(new URLSearchParams(location.search).get("admin")==="1") document.getElementById("admin").style.display="block";
+document.getElementById("save").onclick=()=>{ document.getElementById("adminMsg").textContent="Client link updated. Share this, not the admin page: "+snapshot(); };
+document.getElementById("copy").onclick=async()=>{ const url=snapshot(); try{ await navigator.clipboard.writeText(url); document.getElementById("adminMsg").textContent="Client link copied."; } catch(e){ document.getElementById("adminMsg").textContent=url; } };
+render();
+</script>
+</body>
+</html>
