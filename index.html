@@ -6,7 +6,7 @@
 <title>DTJ010 receipts</title>
 <style>
   body { margin:0; font-family:Georgia, serif; color:#1c1917; background:#f7f4ef; }
-  main { max-width:880px; margin:0 auto; padding:28px 22px 64px; }
+  main { max-width:760px; margin:0 auto; padding:28px 22px 64px; }
   .kicker { font-family:sans-serif; letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:#8a5a2b; }
   h1 { font-weight:500; font-size:30px; margin:8px 0; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -14,6 +14,9 @@
   .card span { font-family:sans-serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b635c; }
   .card strong { display:block; margin-top:6px; font-size:26px; }
   .note { font-family:sans-serif; color:#6b635c; font-size:14px; }
+  a.file { display:block; background:#fffdfb; border:1px solid #e4ddd4; border-radius:12px; padding:12px 14px; margin:8px 0; color:#1c1917; text-decoration:none; }
+  a.file b { display:block; }
+  a.file span { font-family:sans-serif; color:#6b635c; font-size:13px; }
   table { width:100%; border-collapse:collapse; background:#fffdfb; }
   td, th { text-align:left; padding:8px 10px; border-bottom:1px solid #e4ddd4; font-size:14px; }
   .num { text-align:right; }
@@ -23,17 +26,23 @@
 <main>
   <p class="kicker">DTJ010 · DLF Towers B, Jasola</p>
   <h1>Receipts and October invoice</h1>
-  <p class="note">From Mrs Lalimma Gangwani (Partner, CloudRoots Infotech LLP). Licence starts 10 September 2026. The 10-day reduction applies only to September 2026 charges.</p>
+  <p class="note">From Mrs Lalimma Gangwani (Partner, CloudRoots Infotech LLP). Licence starts 10 September 2026. The 10-day cut applies only to September electricity.</p>
   <div class="grid">
     <article class="card"><span>Total received</span><strong>Rs 2,32,000</strong></article>
     <article class="card"><span>October invoice</span><strong>Rs 13,958.82</strong></article>
   </div>
   <table>
     <tr><th>Item</th><th class="num">Rs</th></tr>
-    <tr><td>Electricity after the first 10 September days (Sep 2026 bill)</td><td class="num">1,476.64</td></tr>
-    <tr><td>Maintenance for October 2026 (full DLF total)</td><td class="num">12,482.18</td></tr>
+    <tr><td>Electricity after the first 10 September days</td><td class="num">1,476.64</td></tr>
+    <tr><td>October maintenance, full DLF bill</td><td class="num">12,482.18</td></tr>
     <tr><td>Amount payable</td><td class="num">13,958.82</td></tr>
   </table>
+  <h2>Files</h2>
+  <a class="file" href="DTJ010_Email_Oct2026.pdf"><b>Email to the vendor</b><span>To Rizwanqureshi435@gmail.com · Maintainince and Electricity Invoice of DTJ010 DLF Tower B for Month | Oct -2026</span></a>
+  <a class="file" href="DTJ010_Invoice_Oct2026.pdf"><b>Invoice</b><span>October 2026 · Rs 13,958.82</span></a>
+  <a class="file" href="DTJ010_DLF_Electricity_Sep2026.pdf"><b>DLF electricity bill</b><span>September 2026 · EB/2026-27/1775</span></a>
+  <a class="file" href="DTJ010_DLF_Maintenance_Oct2026.pdf"><b>DLF maintenance bill</b><span>October 2026 · MB/2026-27/2106</span></a>
+  <p class="note">To change next month, replace these four files in the GitHub repo and edit the two amounts on this page.</p>
 </main>
 </body>
 </html>
