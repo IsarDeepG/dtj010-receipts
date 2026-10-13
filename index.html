@@ -67,10 +67,10 @@
   td.num { text-align:right; font-variant-numeric:tabular-nums; }
   .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:6px; }
   .payable { font-family:Newsreader, Georgia, serif; font-size:44px; margin:6px 0 8px; letter-spacing:-.03em; line-height:1; }
-  .files-head { margin:26px 0 4px; }
-  .file { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px 0; border-top:1px solid var(--line); }
+  .card h2.files-head { margin:32px 0 0; padding-top:8px; }
+  .file { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:16px; padding:16px 0; border-top:1px solid var(--line); }
   .file b { display:block; font-weight:500; font-size:15px; }
-  .file .meta { color:var(--muted); font-size:13px; margin-top:2px; }
+  .file .meta { color:var(--muted); font-size:13px; margin-top:4px; line-height:1.4; overflow-wrap:anywhere; }
   .actions { display:flex; gap:8px; flex-shrink:0; }
   .actions a {
     font-size:13px; text-decoration:none; color:var(--ink); border:1px solid var(--line);
@@ -93,7 +93,7 @@
     .layout, .row, .parties, .top, .stats { grid-template-columns:1fr; }
     h1 { font-size:34px; }
     main { padding:24px 16px 64px; }
-    .file { align-items:flex-start; flex-direction:column; }
+    .file { grid-template-columns:1fr; justify-items:start; }
   }
 </style>
 </head>
@@ -236,7 +236,7 @@ function paintDetail() {
   if (hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
       <tr><td>${m.maintLabel || "Maintenance"}</td><td class="num">${inr(m.maint)}</td></tr>
-      <tr><td>DLF invoice</td><td class="num">${inr(payable(m))} · ${billIsPaid ? "Paid" : "Not paid"}</td></tr>`;
+      <tr><td>DLF invoice</td><td class="num"><span class="pill ${billIsPaid ? "paid" : "unpaid"}">${billIsPaid ? "Paid" : "Not paid"}</span> ${inr(payable(m))}</td></tr>`;
   }
   html += `</table>`;
   if (m.comment) html += `<p class="note">${esc(m.comment)}</p>`;
