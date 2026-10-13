@@ -129,7 +129,7 @@
   <div class="top">
     <aside class="card">
       <h2>This year</h2>
-      <p class="sub">Security and the monthly maintenance are separate from the DLF bills.</p>
+      <p class="sub">Security and the monthly rent are separate from the DLF bills.</p>
       <div class="stats">
         <div class="stat"><span>Receipts received</span><strong id="yearReceipts">Rs 0</strong></div>
         <div class="stat"><span>DLF invoiced</span><strong id="yearInvoiced">Rs 0</strong></div>
@@ -240,7 +240,7 @@ function paintDetail() {
   const gate = state.mode === "edit" && !authed;
   const opening = id === "2026-09";
   const heroAmount = opening ? 174000 : fee;
-  const heroTitle = opening ? "Opening payment" : (fee ? "Monthly maintenance" : "No monthly maintenance");
+  const heroTitle = opening ? "Opening payment" : (fee ? "Monthly rent" : "No monthly rent");
   const heroNote = opening ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000." : (fee ? "Rs 58,000 for this month." : "The term ends on 9 Aug 2027.");
   const DUE = "(pending at Goertrip Travels Private Limited)";
   const mark = paid => paid
@@ -252,7 +252,7 @@ function paintDetail() {
     html += `<tr><td>Security deposit, 2 months</td><td class="num">${inr0(116000)}</td></tr>
       <tr><td>Advance, September licence fee</td><td class="num">${inr0(58000)}</td></tr>`;
   } else {
-    html += `<tr><td>Monthly maintenance</td><td class="num">${fee ? inr0(fee) : "—"}</td></tr>`;
+    html += `<tr><td>Monthly rent</td><td class="num">${fee ? inr0(fee) : "—"}</td></tr>`;
   }
   if (hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
@@ -276,7 +276,7 @@ function paintDetail() {
     const feeChoice = feeIsPaid ? "Paid" : "Not paid";
     const billChoice = billIsPaid ? "Paid" : "Not paid";
     html += `<div class="editor">
-      ${fee ? `<div class="field"><label>Monthly maintenance · Rs 58,000</label><div class="seg" id="feeSeg">
+      ${fee ? `<div class="field"><label>Monthly rent · Rs 58,000</label><div class="seg" id="feeSeg">
         ${["Not paid","Paid"].map(s => `<div class="choice"><button type="button" data-s="${s}" class="${feeChoice===s?"on":""}">${s}</button>${s==="Not paid"?`<span class="due-note">${DUE}</span>`:""}</div>`).join("")}
       </div></div>` : ""}
       ${hasBill ? `<div class="field"><label>DLF invoice · ${inr(payable(m))}</label><div class="seg" id="billSeg">
