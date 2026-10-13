@@ -93,6 +93,10 @@
   .seg button { flex:1; font:inherit; border:1px solid var(--line); background:#fff; border-radius:10px; padding:10px; cursor:pointer; }
   .seg button.on { background:var(--ink); color:#f7f4ef; border-color:var(--ink); }
   .seg button.on[data-s="Not paid"] { background:var(--due); border-color:var(--due); }
+  .due-note { display:block; margin-top:4px; max-width:220px; color:var(--due); font-size:11px; line-height:1.35; font-weight:400; }
+  .status { display:inline-flex; flex-direction:column; align-items:flex-end; vertical-align:middle; }
+  .choice { flex:1; display:flex; flex-direction:column; align-items:stretch; }
+  .choice .due-note { text-align:center; max-width:none; }
   .save { font:inherit; background:var(--ink); color:#f7f4ef; border:0; border-radius:12px; padding:11px 16px; cursor:pointer; }
   .note { color:var(--muted); font-size:13px; }
   .err { color:#8d2f2f; font-size:13px; min-height:1.2em; }
@@ -238,7 +242,11 @@ function paintDetail() {
   const heroAmount = opening ? 174000 : fee;
   const heroTitle = opening ? "Opening payment" : (fee ? "Monthly maintenance" : "No monthly maintenance");
   const heroNote = opening ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000." : (fee ? "Rs 58,000 for this month." : "The term ends on 9 Aug 2027.");
-  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? inr0(heroAmount) : "None"}</p><p class="sub">${heroNote}</p></div><span class="pill ${fee ? (feeIsPaid ? "paid" : "unpaid") : "empty"}">${fee ? (feeIsPaid ? "Paid" : "Not paid") : "End of term"}</span></div>`;
+  const DUE = "(pending at Goertrip Travels Private Limited)";
+  const mark = paid => paid
+    ? `<span class="pill paid">Paid</span>`
+    : `<span class="status"><span class="pill unpaid">Not paid</span><span class="due-note">${DUE}</span></span>`;
+  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? inr0(heroAmount) : "None"}</p><p class="sub">${heroNote}</p></div>${fee ? mark(feeIsPaid) : `<span class="pill empty">End of term</span>`}</div>`;
   html += `<table>`;
   if (opening) {
     html += `<tr><td>Security deposit, 2 months</td><td class="num">${inr0(116000)}</td></tr>
@@ -249,7 +257,7 @@ function paintDetail() {
   if (hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
       <tr><td>${m.maintLabel || "DLF maintenance"}</td><td class="num">${inr(m.maint)}</td></tr>
-      <tr><td>DLF invoice</td><td class="num"><span class="pill ${billIsPaid ? "paid" : "unpaid"}">${billIsPaid ? "Paid" : "Not paid"}</span> ${inr(payable(m))}</td></tr>`;
+      <tr><td>DLF invoice</td><td class="num">${mark(billIsPaid)} ${inr(payable(m))}</td></tr>`;
   } else if (id !== "2026-09") {
     html += `<tr><td>Electricity</td><td class="num"><span class="pill pending">Pending</span></td></tr>
       <tr><td>DLF maintenance</td><td class="num"><span class="pill pending">Pending</span></td></tr>`;
@@ -269,10 +277,10 @@ function paintDetail() {
     const billChoice = billIsPaid ? "Paid" : "Not paid";
     html += `<div class="editor">
       ${fee ? `<div class="field"><label>Monthly maintenance · Rs 58,000</label><div class="seg" id="feeSeg">
-        ${["Not paid","Paid"].map(s => `<button type="button" data-s="${s}" class="${feeChoice===s?"on":""}">${s}</button>`).join("")}
+        ${["Not paid","Paid"].map(s => `<div class="choice"><button type="button" data-s="${s}" class="${feeChoice===s?"on":""}">${s}</button>${s==="Not paid"?`<span class="due-note">${DUE}</span>`:""}</div>`).join("")}
       </div></div>` : ""}
       ${hasBill ? `<div class="field"><label>DLF invoice · ${inr(payable(m))}</label><div class="seg" id="billSeg">
-        ${["Not paid","Paid"].map(s => `<button type="button" data-s="${s}" class="${billChoice===s?"on":""}">${s}</button>`).join("")}
+        ${["Not paid","Paid"].map(s => `<div class="choice"><button type="button" data-s="${s}" class="${billChoice===s?"on":""}">${s}</button>${s==="Not paid"?`<span class="due-note">${DUE}</span>`:""}</div>`).join("")}
       </div></div>` : ""}
       <div class="field"><label>Comment</label><textarea id="fComment" placeholder="Optional note">${esc(m.comment)}</textarea></div>
       <button class="save" type="button" id="saveMonth">Save ${label}</button>
@@ -290,7 +298,7 @@ function paintDetail() {
     paint();
   };
   document.querySelectorAll(".seg button").forEach(btn => btn.onclick = () => {
-    btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("on"));
+    btn.closest(".seg").querySelectorAll("button").forEach(b => b.classList.remove("on"));
     btn.classList.add("on");
   });
   const saveBtn = document.getElementById("saveMonth");
