@@ -8,10 +8,13 @@
   body { margin:0; font-family:Georgia, serif; color:#1c1917; background:#f7f4ef; }
   main { max-width:760px; margin:0 auto; padding:28px 22px 64px; }
   .kicker { font-family:sans-serif; letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:#8a5a2b; }
-  h1 { font-weight:500; font-size:30px; margin:8px 0; }
+  h1 { font-weight:500; font-size:30px; margin:8px 0 14px; }
+  .tabs { display:flex; gap:8px; margin:0 0 18px; }
+  .tabs button { font:inherit; border:1px solid #e4ddd4; background:#fffdfb; border-radius:999px; padding:8px 14px; cursor:pointer; }
+  .tabs button.on { background:#1c1917; color:#f7f4ef; border-color:#1c1917; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .card { background:#fffdfb; border:1px solid #e4ddd4; border-radius:14px; padding:14px 16px; }
-  .card span { font-family:sans-serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b635c; }
+  .card span, label { font-family:sans-serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b635c; }
   .card strong { display:block; margin-top:6px; font-size:26px; }
   .note { font-family:sans-serif; color:#6b635c; font-size:14px; }
   a.file { display:block; background:#fffdfb; border:1px solid #e4ddd4; border-radius:12px; padding:12px 14px; margin:8px 0; color:#1c1917; text-decoration:none; }
@@ -20,29 +23,108 @@
   table { width:100%; border-collapse:collapse; background:#fffdfb; }
   td, th { text-align:left; padding:8px 10px; border-bottom:1px solid #e4ddd4; font-size:14px; }
   .num { text-align:right; }
+  .panel { background:#fffdfb; border:1px solid #e4ddd4; border-radius:14px; padding:16px; margin-top:8px; }
+  input, select { font:inherit; width:100%; box-sizing:border-box; border:1px solid #e4ddd4; border-radius:10px; padding:8px 10px; margin:6px 0 12px; }
+  .save { font:inherit; background:#1c1917; color:#f7f4ef; border:0; border-radius:10px; padding:10px 14px; cursor:pointer; }
+  .err { color:#8d2f2f; font-family:sans-serif; font-size:14px; }
+  @media (max-width:700px) { .grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
 <main>
   <p class="kicker">DTJ010 · DLF Towers B, Jasola</p>
   <h1>Receipts and October invoice</h1>
-  <p class="note">From Mrs Lalimma Gangwani (Partner, CloudRoots Infotech LLP). Licence starts 10 September 2026. The 10-day cut applies only to September electricity.</p>
-  <div class="grid">
-    <article class="card"><span>Total received</span><strong>Rs 2,32,000</strong></article>
-    <article class="card"><span>October invoice</span><strong>Rs 13,958.82</strong></article>
+  <div class="tabs">
+    <button type="button" id="viewBtn" class="on">View only</button>
+    <button type="button" id="editBtn">Edit</button>
   </div>
-  <table>
-    <tr><th>Item</th><th class="num">Rs</th></tr>
-    <tr><td>Electricity after the first 10 September days</td><td class="num">1,476.64</td></tr>
-    <tr><td>October maintenance, full DLF bill</td><td class="num">12,482.18</td></tr>
-    <tr><td>Amount payable</td><td class="num">13,958.82</td></tr>
-  </table>
-  <h2>Files</h2>
-  <a class="file" href="DTJ010_Email_Oct2026.pdf"><b>Email to the vendor</b><span>To Rizwanqureshi435@gmail.com · Maintainince and Electricity Invoice of DTJ010 DLF Tower B for Month | Oct -2026</span></a>
-  <a class="file" href="DTJ010_Invoice_Oct2026.pdf"><b>Invoice</b><span>October 2026 · Rs 13,958.82</span></a>
-  <a class="file" href="DTJ010_DLF_Electricity_Sep2026.pdf"><b>DLF electricity bill</b><span>September 2026 · EB/2026-27/1775</span></a>
-  <a class="file" href="DTJ010_DLF_Maintenance_Oct2026.pdf"><b>DLF maintenance bill</b><span>October 2026 · MB/2026-27/2106</span></a>
-  <p class="note">To change next month, replace these four files in the GitHub repo and edit the two amounts on this page.</p>
+  <section id="view">
+    <p class="note">From Mrs Lalimma Gangwani (Partner, CloudRoots Infotech LLP). Licence starts 10 September 2026. The 10-day cut applies only to September electricity.</p>
+    <div class="grid">
+      <article class="card"><span>Total received</span><strong id="received">Rs 2,32,000</strong></article>
+      <article class="card"><span>October invoice</span><strong id="invoice">Rs 13,958.82</strong></article>
+    </div>
+    <table>
+      <tr><th>Item</th><th class="num">Rs</th></tr>
+      <tr><td>Electricity after the first 10 September days</td><td class="num" id="elec">1,476.64</td></tr>
+      <tr><td>October maintenance, full DLF bill</td><td class="num" id="maint">12,482.18</td></tr>
+      <tr><td>Amount payable</td><td class="num" id="payable">13,958.82</td></tr>
+      <tr><td>Status</td><td class="num" id="status">Unpaid</td></tr>
+    </table>
+    <h2>Files</h2>
+    <a class="file" href="DTJ010_Email_Oct2026.pdf"><b>Email to the vendor</b><span>To Rizwanqureshi435@gmail.com · Maintainince and Electricity Invoice of DTJ010 DLF Tower B for Month | Oct -2026</span></a>
+    <a class="file" href="DTJ010_Invoice_Oct2026.pdf"><b>Invoice</b><span>October 2026</span></a>
+    <a class="file" href="DTJ010_DLF_Electricity_Sep2026.pdf"><b>DLF electricity bill</b><span>September 2026 · EB/2026-27/1775</span></a>
+    <a class="file" href="DTJ010_DLF_Maintenance_Oct2026.pdf"><b>DLF maintenance bill</b><span>October 2026 · MB/2026-27/2106</span></a>
+  </section>
+  <section id="gate" class="panel" hidden>
+    <p class="note">Edit is only for Isar. This check is on the page for now.</p>
+    <label>Email</label>
+    <input id="email" type="email" autocomplete="username" value="isar.gangwani@gmail.com">
+    <label>Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <button class="save" type="button" id="login">Open edit</button>
+    <p class="err" id="loginErr"></p>
+  </section>
+  <section id="editor" class="panel" hidden>
+    <label>Total received</label>
+    <input id="fReceived" value="232000">
+    <label>Electricity</label>
+    <input id="fElec" value="1476.64">
+    <label>Maintenance</label>
+    <input id="fMaint" value="12482.18">
+    <label>Status</label>
+    <select id="fStatus"><option>Unpaid</option><option>Paid</option><option>Part paid</option></select>
+    <button class="save" type="button" id="save">Save on this page</button>
+    <p class="note" id="saved"></p>
+  </section>
 </main>
+<script>
+const USER = "isar.gangwani@gmail.com";
+const PASS = "DLFpassword";
+const KEY = "dtj010-portal";
+const blank = { received:"232000", elec:"1476.64", maint:"12482.18", status:"Unpaid" };
+function money(n){ const x = Number(String(n).replace(/,/g,"")); return "Rs " + (isNaN(x)?n:x.toLocaleString("en-IN",{minimumFractionDigits:x%1?2:0,maximumFractionDigits:2})); }
+function load(){ try { return Object.assign({}, blank, JSON.parse(localStorage.getItem(KEY)||"{}")); } catch(e){ return blank; } }
+function paint(){
+  const s = load();
+  const payable = (Number(s.elec)||0) + (Number(s.maint)||0);
+  document.getElementById("received").textContent = money(s.received);
+  document.getElementById("invoice").textContent = money(payable);
+  document.getElementById("elec").textContent = Number(s.elec).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById("maint").textContent = Number(s.maint).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById("payable").textContent = payable.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById("status").textContent = s.status;
+  document.getElementById("fReceived").value = s.received;
+  document.getElementById("fElec").value = s.elec;
+  document.getElementById("fMaint").value = s.maint;
+  document.getElementById("fStatus").value = s.status;
+}
+function show(mode){
+  document.getElementById("viewBtn").classList.toggle("on", mode!=="edit");
+  document.getElementById("editBtn").classList.toggle("on", mode==="edit");
+  document.getElementById("view").hidden = false;
+  const authed = sessionStorage.getItem("dtj010-auth")==="1";
+  document.getElementById("gate").hidden = mode!=="edit" || authed;
+  document.getElementById("editor").hidden = mode!=="edit" || !authed;
+}
+document.getElementById("viewBtn").onclick = () => show("view");
+document.getElementById("editBtn").onclick = () => show("edit");
+document.getElementById("login").onclick = () => {
+  const ok = document.getElementById("email").value.trim().toLowerCase()===USER && document.getElementById("password").value===PASS;
+  document.getElementById("loginErr").textContent = ok ? "" : "Email or password is wrong.";
+  if(!ok) return;
+  sessionStorage.setItem("dtj010-auth","1");
+  show("edit");
+};
+document.getElementById("save").onclick = () => {
+  const s = { received:document.getElementById("fReceived").value, elec:document.getElementById("fElec").value, maint:document.getElementById("fMaint").value, status:document.getElementById("fStatus").value };
+  localStorage.setItem(KEY, JSON.stringify(s));
+  paint();
+  document.getElementById("saved").textContent = "Saved in this browser. The public page for other people does not change until the GitHub file is updated.";
+};
+paint();
+show("view");
+</script>
 </body>
 </html>
