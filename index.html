@@ -9,7 +9,7 @@
 <style>
   :root {
     --ink:#241c16; --muted:#74695f; --line:#eadfd2; --paper:#f3ece3; --card:#fffdf9;
-    --brass:#8d5a2b; --ok:#1c6842; --ok-bg:#e5f3eb; --wait:#8d5a2b; --wait-bg:#f6ecdf;
+    --brass:#8d5a2b; --ok:#1c6842; --ok-bg:#e5f3eb; --wait:#8d5a2b; --wait-bg:#f6ecdf; --due:#b42318; --due-bg:#fde8e6;
     --part:#3c4e84; --part-bg:#e7ecf7; --empty:#b3aaa1;
   }
   * { box-sizing:border-box; }
@@ -47,7 +47,7 @@
   .months button b { display:block; font-weight:500; font-size:14px; }
   .months button i { display:block; width:6px; height:6px; border-radius:99px; margin:10px auto 0; background:var(--empty); font-style:normal; }
   .months button.paid i { background:var(--ok); }
-  .months button.unpaid i { background:var(--wait); }
+  .months button.unpaid i { background:var(--due); }
   .months button.part i { background:var(--part); }
   .months button.on { border-color:var(--ink); background:#fff; box-shadow:0 0 0 1px var(--ink); }
   .layout { display:grid; grid-template-columns:300px 1fr; gap:18px; margin-top:22px; align-items:start; }
@@ -58,7 +58,7 @@
   .stat span { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
   .stat strong { font-family:Newsreader, Georgia, serif; font-size:28px; font-weight:550; letter-spacing:-.02em; }
   .pill { display:inline-block; border-radius:999px; padding:5px 10px; font-size:12px; margin-top:4px; }
-  .pill.unpaid { background:var(--wait-bg); color:var(--wait); }
+  .pill.unpaid { background:var(--due-bg); color:var(--due); }
   .pill.paid { background:var(--ok-bg); color:var(--ok); }
   .pill.part { background:var(--part-bg); color:var(--part); }
   .pill.empty { background:#eeeae4; color:#5c564f; }
@@ -67,7 +67,7 @@
   td.num { text-align:right; font-variant-numeric:tabular-nums; }
   .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:6px; }
   .payable { font-family:Newsreader, Georgia, serif; font-size:44px; margin:6px 0 8px; letter-spacing:-.03em; line-height:1; }
-  .card h2.files-head { margin:32px 0 0; padding-top:8px; }
+  .card h2.files-head { margin:36px 0 8px; padding-top:28px; border-top:1px solid var(--line); }
   .file { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:16px; padding:16px 0; border-top:1px solid var(--line); }
   .file b { display:block; font-weight:500; font-size:15px; }
   .file .meta { color:var(--muted); font-size:13px; margin-top:4px; line-height:1.4; overflow-wrap:anywhere; }
@@ -85,6 +85,7 @@
   .seg { display:flex; gap:8px; }
   .seg button { flex:1; font:inherit; border:1px solid var(--line); background:#fff; border-radius:10px; padding:10px; cursor:pointer; }
   .seg button.on { background:var(--ink); color:#f7f4ef; border-color:var(--ink); }
+  .seg button.on[data-s="Not paid"] { background:var(--due); border-color:var(--due); }
   .save { font:inherit; background:var(--ink); color:#f7f4ef; border:0; border-radius:12px; padding:11px 16px; cursor:pointer; }
   .note { color:var(--muted); font-size:13px; }
   .err { color:#8d2f2f; font-size:13px; min-height:1.2em; }
