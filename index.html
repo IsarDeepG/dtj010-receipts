@@ -230,9 +230,18 @@ function paintDetail() {
   const authed = sessionStorage.getItem("dtj010-auth") === "1";
   const editing = state.mode === "edit" && authed;
   const gate = state.mode === "edit" && !authed;
-  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>First payment</h2><p class="payable">${fee ? inr0(fee) : "None"}</p><p class="sub">${fee ? "Licence fee for this month, under the deed." : "The term ends on 9 Aug 2027. No licence fee this month."}</p></div><span class="pill ${fee ? (feeIsPaid ? "paid" : "unpaid") : "empty"}">${fee ? (feeIsPaid ? "Paid" : "Not paid") : "End of term"}</span></div>`;
-  html += `<table>
-    <tr><td>Licence fee</td><td class="num">${fee ? inr0(fee) : "—"}</td></tr>`;
+  const opening = id === "2026-09";
+  const heroAmount = opening ? 174000 : fee;
+  const heroTitle = opening ? "Opening payment" : (fee ? "Licence fee" : "No licence fee");
+  const heroNote = opening ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000." : (fee ? "Monthly licence fee under the deed. Not the DLF bill." : "The term ends on 9 Aug 2027.");
+  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? inr0(heroAmount) : "None"}</p><p class="sub">${heroNote}</p></div><span class="pill ${fee ? (feeIsPaid ? "paid" : "unpaid") : "empty"}">${fee ? (feeIsPaid ? "Paid" : "Not paid") : "End of term"}</span></div>`;
+  html += `<table>`;
+  if (opening) {
+    html += `<tr><td>Security deposit, 2 months</td><td class="num">${inr0(116000)}</td></tr>
+      <tr><td>Advance, September licence fee</td><td class="num">${inr0(58000)}</td></tr>`;
+  } else {
+    html += `<tr><td>Licence fee</td><td class="num">${fee ? inr0(fee) : "—"}</td></tr>`;
+  }
   if (hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
       <tr><td>${m.maintLabel || "Maintenance"}</td><td class="num">${inr(m.maint)}</td></tr>
