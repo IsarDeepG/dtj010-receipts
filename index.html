@@ -251,11 +251,11 @@ function paintDetail() {
   if (m.comment) html += `<p class="note">${esc(m.comment)}</p>`;
   if (!gate) html += `<h2 class="files-head">Files</h2>${fileList(id)}`;
   if (gate) {
-    html += `<div class="gate"><p class="sub">Edit is only for Isar.</p>
-      <div class="field"><label>Email</label><input id="email" type="email" value="isar.gangwani@gmail.com"></div>
-      <div class="field"><label>Password</label><input id="password" type="password"></div>
-      <button class="save" type="button" id="login">Open edit</button>
-      <p class="err" id="loginErr"></p></div>`;
+    html += `<form class="gate" id="gateForm"><p class="sub">Edit is only for Isar.</p>
+      <div class="field"><label>Email</label><input id="email" type="email" value="isar.gangwani@gmail.com" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+      <button class="save" type="submit">Open edit</button>
+      <p class="err" id="loginErr"></p></form>`;
   }
   if (editing) {
     const feeChoice = feeIsPaid ? "Paid" : "Not paid";
@@ -273,8 +273,9 @@ function paintDetail() {
     </div>`;
   }
   document.getElementById("detail").innerHTML = html;
-  const login = document.getElementById("login");
-  if (login) login.onclick = () => {
+  const gateForm = document.getElementById("gateForm");
+  if (gateForm) gateForm.onsubmit = (e) => {
+    e.preventDefault();
     const ok = document.getElementById("email").value.trim().toLowerCase() === USER && document.getElementById("password").value === PASS;
     document.getElementById("loginErr").textContent = ok ? "" : "Email or password is wrong.";
     if (!ok) return;
