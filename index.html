@@ -8,69 +8,87 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,550&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink:#1c1917; --muted:#6f675f; --line:#e6dfd6; --paper:#f6f1ea; --card:#fffcf8;
-    --brass:#8a5a2b; --ok:#1f6b45; --ok-bg:#e7f4ec; --wait:#8a5a2b; --wait-bg:#f8efe4;
-    --part:#3d4f86; --part-bg:#e8edf8; --empty:#a39b93;
+    --ink:#241c16; --muted:#74695f; --line:#eadfd2; --paper:#f3ece3; --card:#fffdf9;
+    --brass:#8d5a2b; --ok:#1c6842; --ok-bg:#e5f3eb; --wait:#8d5a2b; --wait-bg:#f6ecdf;
+    --part:#3c4e84; --part-bg:#e7ecf7; --empty:#b3aaa1;
   }
   * { box-sizing:border-box; }
-  body { margin:0; color:var(--ink); background:var(--paper); font-family:Outfit, sans-serif; }
-  main { max-width:1080px; margin:0 auto; padding:28px 22px 72px; }
-  header { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; flex-wrap:wrap; }
-  .kicker { letter-spacing:.16em; text-transform:uppercase; font-size:11px; color:var(--brass); margin:0; }
-  h1 { font-family:Newsreader, Georgia, serif; font-weight:550; font-size:36px; margin:6px 0 0; letter-spacing:-.02em; }
-  .modes { display:flex; background:#fff; border:1px solid var(--line); border-radius:999px; padding:4px; }
-  .modes button { font:inherit; border:0; background:transparent; border-radius:999px; padding:8px 16px; cursor:pointer; color:var(--muted); }
+  body { margin:0; color:var(--ink); background:
+    radial-gradient(1200px 420px at 10% -10%, #f8f1e6 0%, transparent 60%),
+    var(--paper); font-family:Outfit, sans-serif; }
+  main { max-width:1120px; margin:0 auto; padding:36px 28px 80px; }
+  header { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; flex-wrap:wrap; }
+  .kicker { letter-spacing:.18em; text-transform:uppercase; font-size:11px; color:var(--brass); margin:0 0 8px; }
+  h1 { font-family:Newsreader, Georgia, serif; font-weight:550; font-size:42px; margin:0; letter-spacing:-.03em; line-height:1; }
+  .modes { display:flex; background:#fff; border:1px solid var(--line); border-radius:999px; padding:4px; margin-top:8px; }
+  .modes button { font:inherit; border:0; background:transparent; border-radius:999px; padding:9px 18px; cursor:pointer; color:var(--muted); }
   .modes button.on { background:var(--ink); color:#f7f4ef; }
-  .toolbar { display:flex; gap:12px; align-items:center; margin:22px 0 14px; flex-wrap:wrap; }
-  label.quiet { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .parties { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:28px 0 8px; }
+  .parties div { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px 15px; }
+  .parties span { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .parties strong { font-weight:500; font-size:15px; }
+  .toolbar { display:flex; gap:14px; align-items:center; margin:22px 0 16px; flex-wrap:wrap; }
+  label.quiet { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
   select.year, input, select.field {
-    font:inherit; border:1px solid var(--line); background:var(--card); border-radius:10px; padding:8px 10px; color:var(--ink);
+    font:inherit; border:1px solid var(--line); background:var(--card); border-radius:12px; padding:10px 12px; color:var(--ink);
   }
-  .months { display:grid; grid-template-columns:repeat(12, 1fr); gap:6px; }
+  select.year { min-width:280px; }
+  .months { display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:10px; }
   .months button {
-    font:inherit; border:1px solid var(--line); background:var(--card); border-radius:12px; padding:10px 4px 8px; cursor:pointer; text-align:center;
+    font:inherit; border:1px solid var(--line); background:var(--card); border-radius:14px;
+    padding:14px 6px 12px; cursor:pointer; text-align:center; min-height:78px;
   }
-  .months button small { display:block; color:var(--muted); font-size:11px; }
-  .months button b { display:block; font-weight:500; font-size:13px; margin-bottom:6px; }
-  .months button i { display:block; width:7px; height:7px; border-radius:99px; margin:0 auto; background:var(--empty); font-style:normal; }
+  .months button small { display:block; color:var(--muted); font-size:11px; margin-top:2px; }
+  .months button b { display:block; font-weight:500; font-size:14px; }
+  .months button i { display:block; width:6px; height:6px; border-radius:99px; margin:10px auto 0; background:var(--empty); font-style:normal; }
   .months button.paid i { background:var(--ok); }
   .months button.unpaid i { background:var(--wait); }
   .months button.part i { background:var(--part); }
-  .months button.on { border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink); }
-  .layout { display:grid; grid-template-columns:280px 1fr; gap:16px; margin-top:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; }
-  .card h2 { font-family:Newsreader, Georgia, serif; font-weight:550; font-size:22px; margin:0 0 4px; }
-  .sub { color:var(--muted); font-size:13px; margin:0 0 14px; }
-  .stat { padding:10px 0; border-top:1px solid var(--line); }
-  .stat span { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
-  .stat strong { font-family:Newsreader, Georgia, serif; font-size:26px; font-weight:550; }
-  .pill { display:inline-block; border-radius:999px; padding:3px 8px; font-size:12px; }
+  .months button.on { border-color:var(--ink); background:#fff; box-shadow:0 0 0 1px var(--ink); }
+  .layout { display:grid; grid-template-columns:300px 1fr; gap:18px; margin-top:22px; align-items:start; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px 22px 18px; }
+  .card h2 { font-family:Newsreader, Georgia, serif; font-weight:550; font-size:26px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 8px; line-height:1.45; }
+  .stat { padding:14px 0 12px; border-top:1px solid var(--line); }
+  .stat span { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .stat strong { font-family:Newsreader, Georgia, serif; font-size:28px; font-weight:550; letter-spacing:-.02em; }
+  .pill { display:inline-block; border-radius:999px; padding:5px 10px; font-size:12px; margin-top:4px; }
   .pill.unpaid { background:var(--wait-bg); color:var(--wait); }
   .pill.paid { background:var(--ok-bg); color:var(--ok); }
   .pill.part { background:var(--part-bg); color:var(--part); }
   .pill.empty { background:#eeeae4; color:#5c564f; }
-  table { width:100%; border-collapse:collapse; }
-  td { padding:10px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; }
+  td { padding:13px 0; border-bottom:1px solid var(--line); font-size:15px; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; }
-  .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-  .payable { font-family:Newsreader, Georgia, serif; font-size:40px; margin:8px 0 0; }
-  a.file { display:flex; justify-content:space-between; gap:12px; text-decoration:none; color:inherit; padding:12px 0; border-top:1px solid var(--line); }
-  a.file b { font-weight:500; }
-  a.file span { color:var(--muted); font-size:13px; }
-  .gate, .editor { margin-top:14px; }
-  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:6px; }
+  .payable { font-family:Newsreader, Georgia, serif; font-size:44px; margin:6px 0 8px; letter-spacing:-.03em; line-height:1; }
+  .files-head { margin:26px 0 4px; }
+  .file { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px 0; border-top:1px solid var(--line); }
+  .file b { display:block; font-weight:500; font-size:15px; }
+  .file .meta { color:var(--muted); font-size:13px; margin-top:2px; }
+  .actions { display:flex; gap:8px; flex-shrink:0; }
+  .actions a {
+    font-size:13px; text-decoration:none; color:var(--ink); border:1px solid var(--line);
+    background:#fff; border-radius:999px; padding:7px 12px;
+  }
+  .actions a.primary { background:var(--ink); color:#f7f4ef; border-color:var(--ink); }
+  .gate, .editor { margin-top:18px; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .field { margin-bottom:12px; }
   .field label { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
   .field input, .field select { width:100%; }
-  .seg { display:flex; gap:6px; }
-  .seg button { flex:1; font:inherit; border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px; cursor:pointer; }
+  .seg { display:flex; gap:8px; }
+  .seg button { flex:1; font:inherit; border:1px solid var(--line); background:#fff; border-radius:10px; padding:10px; cursor:pointer; }
   .seg button.on { background:var(--ink); color:#f7f4ef; border-color:var(--ink); }
-  .save { font:inherit; background:var(--ink); color:#f7f4ef; border:0; border-radius:10px; padding:10px 14px; cursor:pointer; }
+  .save { font:inherit; background:var(--ink); color:#f7f4ef; border:0; border-radius:12px; padding:11px 16px; cursor:pointer; }
   .note { color:var(--muted); font-size:13px; }
   .err { color:#8d2f2f; font-size:13px; min-height:1.2em; }
-  @media (max-width:860px) {
+  @media (max-width:900px) {
     .months { grid-template-columns:repeat(6, 1fr); }
-    .layout, .row { grid-template-columns:1fr; }
-    h1 { font-size:30px; }
+    .layout, .row, .parties { grid-template-columns:1fr; }
+    h1 { font-size:34px; }
+    main { padding:24px 16px 64px; }
+    .file { align-items:flex-start; flex-direction:column; }
   }
 </style>
 </head>
@@ -86,6 +104,10 @@
       <button type="button" id="editBtn">Edit</button>
     </div>
   </header>
+  <section class="parties">
+    <div><span>Licensors</span><strong>Isar Deep Gangwani and Lalimma Gangwani</strong></div>
+    <div><span>Licensee</span><strong>Goertrip Travels Private Limited</strong></div>
+  </section>
 
   <div class="toolbar">
     <label class="quiet" for="year">Licence year</label>
@@ -184,7 +206,7 @@ function paintYear() {
 function fileList(id) {
   const files = FILES[id] || [];
   if (!files.length) return `<p class="note">No files for this month yet.</p>`;
-  return files.map(([href, name, meta]) => `<a class="file" href="${href}"><b>${name}</b><span>${meta}</span></a>`).join("");
+  return files.map(([href, name, meta]) => `<div class="file"><div><b>${name}</b><div class="meta">${meta}</div></div><div class="actions"><a href="${href}" target="_blank" rel="noopener">View</a><a class="primary" href="${href}" download>Download</a></div></div>`).join("");
 }
 function paintDetail() {
   const id = state.selected;
@@ -205,7 +227,7 @@ function paintDetail() {
     </table>`;
     if (m.ref || m.paidOn) html += `<p class="note">${[m.paidOn, m.ref].filter(Boolean).join(" · ")}</p>`;
   }
-  if (!gate) html += `<h2 style="margin-top:18px">Files</h2>${fileList(id)}`;
+  if (!gate) html += `<h2 class="files-head">Files</h2>${fileList(id)}`;
   if (gate) {
     html += `<div class="gate"><p class="sub">Edit is only for Isar.</p>
       <div class="field"><label>Email</label><input id="email" type="email" value="isar.gangwani@gmail.com"></div>
