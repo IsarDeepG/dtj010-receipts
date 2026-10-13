@@ -240,14 +240,17 @@ function paintDetail() {
   const editing = state.mode === "edit" && authed;
   const gate = state.mode === "edit" && !authed;
   const opening = id === "2026-09";
-  const heroAmount = opening ? 174000 : fee;
-  const heroTitle = opening ? "Opening payment" : (fee ? "Monthly rent" : "No monthly rent");
-  const heroNote = opening ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000." : (fee ? "Rs 58,000 for this month." : "The term ends on 9 Aug 2027.");
+  const dlf = payable(m);
+  const heroAmount = opening ? 174000 : fee + dlf;
+  const heroTitle = opening ? "Opening payment" : (heroAmount ? "Total payment requested" : "No charge");
+  const heroNote = opening
+    ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000."
+    : (hasBill ? `${inr0(fee)} monthly rent + ${inr(dlf)} DLF invoice.` : (fee ? `${inr0(fee)} monthly rent. DLF electricity and maintenance are still pending.` : "The term ends on 9 Aug 2027."));
   const DUE = "(pending at Goertrip Travels Private Limited)";
   const mark = paid => paid
     ? `<span class="pill paid">Paid</span>`
     : `<span class="status"><span class="pill unpaid">Not paid</span><span class="due-note">${DUE}</span></span>`;
-  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? inr0(heroAmount) : "None"}</p><p class="sub">${heroNote}</p></div></div>`;
+  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? (hasBill && !opening ? inr(heroAmount) : inr0(heroAmount)) : "None"}</p><p class="sub">${heroNote}</p></div></div>`;
   html += `<table>`;
   if (opening) {
     html += `<tr><td>Security deposit, 2 months</td><td class="num">${mark(true)} ${inr0(116000)}</td></tr>
