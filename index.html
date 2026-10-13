@@ -72,6 +72,7 @@
   table { width:100%; border-collapse:collapse; margin-top:8px; }
   td { padding:13px 0; border-bottom:1px solid var(--line); font-size:15px; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  td.split { padding-left:22px; color:var(--muted); }
   td.num .pill, td.num .status { margin-right:10px; vertical-align:middle; }
   .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:6px; }
   .payable { font-family:Newsreader, Georgia, serif; font-size:44px; margin:6px 0 8px; letter-spacing:-.03em; line-height:1; }
@@ -245,7 +246,7 @@ function paintDetail() {
   const heroTitle = opening ? "Opening payment" : (heroAmount ? "Total payment requested" : "No charge");
   const heroNote = opening
     ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000."
-    : (hasBill ? `${inr0(fee)} monthly rent + ${inr(dlf)} DLF invoice.` : (fee ? `${inr0(fee)} monthly rent. DLF electricity and maintenance are still pending.` : "The term ends on 9 Aug 2027."));
+    : (hasBill ? `${inr0(fee)} monthly rent + ${inr(dlf)} DLF invoice.` : (fee ? `${inr0(fee)} monthly rent${id >= "2027-04" ? ", split equally between Isar and Lalimma" : ""}. DLF electricity and maintenance are still pending.` : "The term ends on 9 Aug 2027."));
   const DUE = "(pending at Goertrip Travels Private Limited)";
   const mark = paid => paid
     ? `<span class="pill paid">Paid</span>`
@@ -257,6 +258,10 @@ function paintDetail() {
       <tr><td>Advance, September licence fee</td><td class="num">${mark(true)} ${inr0(58000)}</td></tr>`;
   } else {
     html += `<tr><td>Monthly rent</td><td class="num">${fee ? `${mark(feeIsPaid)} ${inr0(fee)}` : "—"}</td></tr>`;
+    if (id >= "2027-04" && fee) {
+      html += `<tr><td class="split">Isar Deep Gangwani</td><td class="num">${inr0(fee / 2)}</td></tr>
+        <tr><td class="split">Lalimma Gangwani</td><td class="num">${inr0(fee / 2)}</td></tr>`;
+    }
   }
   if (hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
