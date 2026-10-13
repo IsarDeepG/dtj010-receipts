@@ -27,17 +27,13 @@
   .parties div { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px 15px; }
   .parties span { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
   .parties strong { font-weight:500; font-size:15px; }
-  .top { display:grid; grid-template-columns:minmax(0,1fr) 240px; gap:16px; margin-top:22px; align-items:stretch; }
-  .year-pick { min-width:0; display:flex; flex-direction:column; justify-content:center; }
-  select.year {
-    width:100%; max-width:100%; min-width:0; margin-top:10px;
-    appearance:none; -webkit-appearance:none;
-    background-image:linear-gradient(45deg, transparent 50%, #241c16 50%), linear-gradient(135deg, #241c16 50%, transparent 50%);
-    background-position:calc(100% - 18px) 50%, calc(100% - 12px) 50%;
-    background-size:6px 6px, 6px 6px;
-    background-repeat:no-repeat;
-    padding-right:32px;
-  }
+  .top { display:grid; grid-template-columns:minmax(0,1fr) 220px; gap:16px; margin-top:22px; align-items:start; }
+  .side { display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .year-pick { min-width:0; padding:14px 14px 12px; }
+  .year-pick .year-name { display:block; font-family:Newsreader, Georgia, serif; font-size:22px; font-weight:550; letter-spacing:-.02em; margin:2px 0 2px; }
+  .upcoming { padding:14px 14px 12px; }
+  .upcoming ol { margin:8px 0 0; padding-left:18px; }
+  .upcoming li { font-size:14px; line-height:1.4; margin:0 0 8px; }
   .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:8px; }
   .detail { margin-top:16px; }
   select.year, input, select.field {
@@ -138,12 +134,22 @@
         <div class="stat"><span>Still to collect</span><strong id="yearDue">Rs 0</strong></div>
       </div>
     </aside>
-    <aside class="card year-pick">
-      <p class="kicker">Licence year</p>
-      <select id="year" class="year" aria-label="Licence year">
-        <option value="2026-27">2026–27 · 10 Sep 2026 to 9 Aug 2027</option>
-      </select>
-    </aside>
+    <div class="side">
+      <aside class="card year-pick">
+        <p class="kicker">Licence year</p>
+        <strong class="year-name">2026–27</strong>
+        <p class="sub">10 Sep 2026 – 9 Aug 2027</p>
+        <select id="year" class="year" aria-label="Licence year">
+          <option value="2026-27">2026–27</option>
+        </select>
+      </aside>
+      <aside class="card upcoming">
+        <p class="kicker">Upcoming</p>
+        <ol>
+          <li>New rental agreement, 1 Apr 2027 onwards</li>
+        </ol>
+      </aside>
+    </div>
   </div>
   <div class="months" id="months"></div>
   <section class="card detail" id="detail"></section>
