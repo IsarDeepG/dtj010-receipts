@@ -27,8 +27,13 @@
   .parties div { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px 15px; }
   .parties span { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
   .parties strong { font-weight:500; font-size:15px; }
-  .toolbar { display:flex; gap:14px; align-items:center; margin:22px 0 16px; flex-wrap:wrap; }
-  label.quiet { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .top { display:grid; grid-template-columns:1fr 280px; gap:16px; margin-top:22px; align-items:stretch; }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:8px; }
+  .year-pick { display:flex; flex-direction:column; justify-content:space-between; }
+  .year-name { font-family:Newsreader, Georgia, serif; font-size:32px; font-weight:550; letter-spacing:-.03em; display:block; margin:4px 0 6px; }
+  select.year { width:100%; margin-top:12px; }
+  .months { margin-top:16px; }
+  .detail { margin-top:16px; }
   select.year, input, select.field {
     font:inherit; border:1px solid var(--line); background:var(--card); border-radius:12px; padding:10px 12px; color:var(--ink);
   }
@@ -76,7 +81,7 @@
   .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .field { margin-bottom:12px; }
   .field label { display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-  .field input, .field select { width:100%; }
+  .field textarea { width:100%; min-height:88px; resize:vertical; font:inherit; border:1px solid var(--line); background:var(--card); border-radius:12px; padding:10px 12px; color:var(--ink); }
   .seg { display:flex; gap:8px; }
   .seg button { flex:1; font:inherit; border:1px solid var(--line); background:#fff; border-radius:10px; padding:10px; cursor:pointer; }
   .seg button.on { background:var(--ink); color:#f7f4ef; border-color:var(--ink); }
@@ -85,7 +90,7 @@
   .err { color:#8d2f2f; font-size:13px; min-height:1.2em; }
   @media (max-width:900px) {
     .months { grid-template-columns:repeat(6, 1fr); }
-    .layout, .row, .parties { grid-template-columns:1fr; }
+    .layout, .row, .parties, .top, .stats { grid-template-columns:1fr; }
     h1 { font-size:34px; }
     main { padding:24px 16px 64px; }
     .file { align-items:flex-start; flex-direction:column; }
@@ -109,31 +114,29 @@
     <div><span>Licensee</span><strong>Goertrip Travels Private Limited</strong></div>
   </section>
 
-  <div class="toolbar">
-    <label class="quiet" for="year">Licence year</label>
-    <select id="year" class="year">
-      <option value="2026-27">2026–27 · 10 Sep 2026 to 9 Aug 2027</option>
-    </select>
-  </div>
-  <div class="months" id="months"></div>
-
-  <div class="layout">
+  <div class="top">
     <aside class="card">
       <h2>This year</h2>
-      <p class="sub">Security, advance and licence fee are separate from the DLF bills.</p>
-      <div class="stat"><span>Receipts received</span><strong id="yearReceipts">Rs 0</strong></div>
-      <div class="stat"><span>DLF invoiced</span><strong id="yearInvoiced">Rs 0</strong></div>
-      <div class="stat"><span>Still to collect</span><strong id="yearDue">Rs 0</strong></div>
-      <div id="receiptEdit" hidden>
-        <p class="sub" style="margin-top:16px">Opening receipts</p>
-        <div class="field"><label>Security deposit</label><input id="rSecurity" inputmode="decimal"></div>
-        <div class="field"><label>One month advance</label><input id="rAdvance" inputmode="decimal"></div>
-        <div class="field"><label>Licence fee received</label><input id="rFees" inputmode="decimal"></div>
+      <p class="sub">Security and the monthly licence fee are separate from the DLF bills.</p>
+      <div class="stats">
+        <div class="stat"><span>Receipts received</span><strong id="yearReceipts">Rs 0</strong></div>
+        <div class="stat"><span>DLF invoiced</span><strong id="yearInvoiced">Rs 0</strong></div>
+        <div class="stat"><span>Still to collect</span><strong id="yearDue">Rs 0</strong></div>
       </div>
     </aside>
-
-    <section class="card" id="detail"></section>
+    <aside class="card year-pick">
+      <div>
+        <p class="kicker">Licence year</p>
+        <strong class="year-name">2026–27</strong>
+        <p class="sub">10 Sep 2026 to 9 Aug 2027</p>
+      </div>
+      <select id="year" class="year" aria-label="Licence year">
+        <option value="2026-27">2026–27</option>
+      </select>
+    </aside>
   </div>
+  <div class="months" id="months"></div>
+  <section class="card detail" id="detail"></section>
 </main>
 <script>
 const USER = "isar.gangwani@gmail.com";
@@ -165,8 +168,11 @@ const seed = {
     }
   }
 };
+const FEE = 58000;
+const FEE_MONTHS = ["2026-09","2026-10","2026-11","2026-12","2027-01","2027-02","2027-03","2027-04","2027-05","2027-06","2027-07"];
 const inr = n => "Rs " + Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const inr0 = n => "Rs " + Math.round(Number(n || 0)).toLocaleString("en-IN");
+const esc = s => String(s || "").replace(/[&<>"]/g, c => ({ "&":"\u0026amp;","<":"\u0026lt;",">":"\u0026gt;","\"":"\u0026quot;" }[c]));
 function load() {
   try { return Object.assign({}, seed, JSON.parse(localStorage.getItem(KEY) || "{}"), { months: Object.assign({}, seed.months, (JSON.parse(localStorage.getItem(KEY) || "{}").months) || {}) }); }
   catch (e) { return JSON.parse(JSON.stringify(seed)); }
@@ -175,12 +181,20 @@ function save(state) { localStorage.setItem(KEY, JSON.stringify(state)); }
 let state = load();
 if (!state.selected) state.selected = "2026-10";
 
+function feeOf(id) { return FEE_MONTHS.includes(id) ? FEE : 0; }
+function feePaid(id, m) {
+  if (m && m.feeStatus) return m.feeStatus === "Paid";
+  return id === "2026-09" || id === "2026-10";
+}
+function billPaid(m) { return m && m.status === "Paid"; }
 function monthStatus(id) {
   const m = state.months[id];
-  if (!m || ((Number(m.elec) || 0) === 0 && (Number(m.maint) || 0) === 0)) return "empty";
-  if (m.status === "Paid") return "paid";
-  if (m.status === "Part paid") return "part";
-  return "unpaid";
+  const fee = feeOf(id);
+  const bill = payable(m);
+  if (!fee && !bill) return "empty";
+  if (fee && !feePaid(id, m)) return "unpaid";
+  if (bill && !billPaid(m)) return "unpaid";
+  return "paid";
 }
 function payable(m) { return (Number(m?.elec) || 0) + (Number(m?.maint) || 0); }
 
@@ -193,15 +207,12 @@ function paintMonths() {
 }
 function paintYear() {
   const rec = Number(state.receipts.security) + Number(state.receipts.advance) + Number(state.receipts.fees);
-  let invoiced = 0, collected = 0;
-  Object.values(state.months).forEach(m => { invoiced += payable(m); collected += Number(m.paid) || 0; });
+  let invoiced = 0, feesDue = 0;
+  FEE_MONTHS.forEach(id => { if (!feePaid(id, state.months[id])) feesDue += FEE; });
+  Object.values(state.months).forEach(m => { if (!billPaid(m)) invoiced += payable(m); });
   document.getElementById("yearReceipts").textContent = inr0(rec);
-  document.getElementById("yearInvoiced").textContent = inr(invoiced);
-  document.getElementById("yearDue").textContent = inr(Math.max(0, invoiced - collected));
-  document.getElementById("rSecurity").value = state.receipts.security;
-  document.getElementById("rAdvance").value = state.receipts.advance;
-  document.getElementById("rFees").value = state.receipts.fees;
-  document.getElementById("receiptEdit").hidden = state.mode !== "edit" || sessionStorage.getItem("dtj010-auth") !== "1";
+  document.getElementById("yearInvoiced").textContent = inr(Object.values(state.months).reduce((s, m) => s + payable(m), 0));
+  document.getElementById("yearDue").textContent = inr(feesDue + invoiced);
 }
 function fileList(id) {
   const files = FILES[id] || [];
@@ -212,21 +223,23 @@ function paintDetail() {
   const id = state.selected;
   const label = MONTHS.find(m => m[0] === id)[2];
   const m = state.months[id] || { elec:0, maint:0, status:"", paid:0, paidOn:"", ref:"", elecLabel:"Electricity", maintLabel:"Maintenance" };
-  const st = monthStatus(id);
-  const statusText = st === "empty" ? "Not invoiced" : (m.status || "Unpaid");
-  const pill = st === "empty" ? "empty" : st;
+  const fee = feeOf(id);
+  const feeIsPaid = feePaid(id, m);
+  const hasBill = payable(m) > 0;
+  const billIsPaid = billPaid(m);
   const authed = sessionStorage.getItem("dtj010-auth") === "1";
   const editing = state.mode === "edit" && authed;
   const gate = state.mode === "edit" && !authed;
-  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${st==="empty"?"No invoice yet":"Amount payable"}</h2>${st==="empty"?"":`<p class="payable">${inr(payable(m))}</p>`}</div><span class="pill ${pill}">${statusText}</span></div>`;
-  if (!gate && st !== "empty") {
-    html += `<table>
-      <tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
+  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>First payment</h2><p class="payable">${fee ? inr0(fee) : "None"}</p><p class="sub">${fee ? "Licence fee for this month, under the deed." : "The term ends on 9 Aug 2027. No licence fee this month."}</p></div><span class="pill ${fee ? (feeIsPaid ? "paid" : "unpaid") : "empty"}">${fee ? (feeIsPaid ? "Paid" : "Not paid") : "End of term"}</span></div>`;
+  html += `<table>
+    <tr><td>Licence fee</td><td class="num">${fee ? inr0(fee) : "—"}</td></tr>`;
+  if (hasBill) {
+    html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
       <tr><td>${m.maintLabel || "Maintenance"}</td><td class="num">${inr(m.maint)}</td></tr>
-      <tr><td>Received against this invoice</td><td class="num">${inr(m.paid)}</td></tr>
-    </table>`;
-    if (m.ref || m.paidOn) html += `<p class="note">${[m.paidOn, m.ref].filter(Boolean).join(" · ")}</p>`;
+      <tr><td>DLF invoice</td><td class="num">${inr(payable(m))} · ${billIsPaid ? "Paid" : "Not paid"}</td></tr>`;
   }
+  html += `</table>`;
+  if (m.comment) html += `<p class="note">${esc(m.comment)}</p>`;
   if (!gate) html += `<h2 class="files-head">Files</h2>${fileList(id)}`;
   if (gate) {
     html += `<div class="gate"><p class="sub">Edit is only for Isar.</p>
@@ -236,20 +249,16 @@ function paintDetail() {
       <p class="err" id="loginErr"></p></div>`;
   }
   if (editing) {
+    const feeChoice = feeIsPaid ? "Paid" : "Not paid";
+    const billChoice = billIsPaid ? "Paid" : "Not paid";
     html += `<div class="editor">
-      <p class="sub">You are editing ${label}. Receipts on the left are not part of this invoice.</p>
-      <div class="row">
-        <div class="field"><label>Electricity charged</label><input id="fElec" inputmode="decimal" value="${m.elec || ""}"></div>
-        <div class="field"><label>What the electricity line should say</label><input id="fElecLabel" value="${m.elecLabel || "Electricity"}"></div>
-        <div class="field"><label>Maintenance charged</label><input id="fMaint" inputmode="decimal" value="${m.maint || ""}"></div>
-        <div class="field"><label>What the maintenance line should say</label><input id="fMaintLabel" value="${m.maintLabel || "Maintenance"}"></div>
-        <div class="field"><label>Received against this invoice</label><input id="fPaid" inputmode="decimal" value="${m.paid || 0}"></div>
-        <div class="field"><label>Paid on</label><input id="fPaidOn" type="date" value="${m.paidOn || ""}"></div>
-      </div>
-      <div class="field"><label>Bank reference</label><input id="fRef" value="${m.ref || ""}" placeholder="IMPS reference"></div>
-      <div class="field"><label>Status</label><div class="seg" id="seg">
-        ${["Unpaid","Part paid","Paid"].map(s => `<button type="button" data-s="${s}" class="${(m.status||"Unpaid")===s?"on":""}">${s}</button>`).join("")}
-      </div></div>
+      ${fee ? `<div class="field"><label>Licence fee · Rs 58,000</label><div class="seg" id="feeSeg">
+        ${["Not paid","Paid"].map(s => `<button type="button" data-s="${s}" class="${feeChoice===s?"on":""}">${s}</button>`).join("")}
+      </div></div>` : ""}
+      ${hasBill ? `<div class="field"><label>DLF invoice · ${inr(payable(m))}</label><div class="seg" id="billSeg">
+        ${["Not paid","Paid"].map(s => `<button type="button" data-s="${s}" class="${billChoice===s?"on":""}">${s}</button>`).join("")}
+      </div></div>` : ""}
+      <div class="field"><label>Comment</label><textarea id="fComment" placeholder="Optional note">${esc(m.comment)}</textarea></div>
       <button class="save" type="button" id="saveMonth">Save ${label}</button>
       <p class="note" id="saved"></p>
     </div>`;
@@ -263,28 +272,19 @@ function paintDetail() {
     sessionStorage.setItem("dtj010-auth", "1");
     paint();
   };
-  document.querySelectorAll("#seg button").forEach(btn => btn.onclick = () => {
-    document.querySelectorAll("#seg button").forEach(b => b.classList.remove("on"));
+  document.querySelectorAll(".seg button").forEach(btn => btn.onclick = () => {
+    btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("on"));
     btn.classList.add("on");
   });
   const saveBtn = document.getElementById("saveMonth");
   if (saveBtn) saveBtn.onclick = () => {
-    const statusBtn = document.querySelector("#seg button.on");
-    state.months[id] = {
-      elec: Number(document.getElementById("fElec").value) || 0,
-      elecLabel: document.getElementById("fElecLabel").value || "Electricity",
-      maint: Number(document.getElementById("fMaint").value) || 0,
-      maintLabel: document.getElementById("fMaintLabel").value || "Maintenance",
-      paid: Number(document.getElementById("fPaid").value) || 0,
-      paidOn: document.getElementById("fPaidOn").value,
-      ref: document.getElementById("fRef").value,
-      status: statusBtn ? statusBtn.dataset.s : "Unpaid"
-    };
-    state.receipts = {
-      security: Number(document.getElementById("rSecurity").value) || 0,
-      advance: Number(document.getElementById("rAdvance").value) || 0,
-      fees: Number(document.getElementById("rFees").value) || 0
-    };
+    const feeBtn = document.querySelector("#feeSeg button.on");
+    const billBtn = document.querySelector("#billSeg button.on");
+    state.months[id] = Object.assign({}, m, {
+      feeStatus: feeBtn ? feeBtn.dataset.s : (feeIsPaid ? "Paid" : "Not paid"),
+      status: billBtn ? billBtn.dataset.s : (m.status || ""),
+      comment: document.getElementById("fComment").value.trim()
+    });
     save(state);
     paint();
     const note = document.getElementById("saved");
@@ -300,13 +300,6 @@ function paint() {
 }
 document.getElementById("viewBtn").onclick = () => { state.mode = "view"; paint(); };
 document.getElementById("editBtn").onclick = () => { state.mode = "edit"; paint(); };
-["rSecurity","rAdvance","rFees"].forEach(id => {
-  document.getElementById(id).addEventListener("change", () => {
-    if (sessionStorage.getItem("dtj010-auth") !== "1") return;
-    state.receipts[id === "rSecurity" ? "security" : id === "rAdvance" ? "advance" : "fees"] = Number(document.getElementById(id).value) || 0;
-    save(state); paintYear();
-  });
-});
 paint();
 </script>
 </body>
