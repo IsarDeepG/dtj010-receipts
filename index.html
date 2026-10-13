@@ -72,6 +72,7 @@
   table { width:100%; border-collapse:collapse; margin-top:8px; }
   td { padding:13px 0; border-bottom:1px solid var(--line); font-size:15px; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  td.num .pill, td.num .status { margin-right:10px; vertical-align:middle; }
   .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:6px; }
   .payable { font-family:Newsreader, Georgia, serif; font-size:44px; margin:6px 0 8px; letter-spacing:-.03em; line-height:1; }
   .card h2.files-head { margin:36px 0 8px; padding-top:28px; border-top:1px solid var(--line); }
@@ -246,13 +247,13 @@ function paintDetail() {
   const mark = paid => paid
     ? `<span class="pill paid">Paid</span>`
     : `<span class="status"><span class="pill unpaid">Not paid</span><span class="due-note">${DUE}</span></span>`;
-  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? inr0(heroAmount) : "None"}</p><p class="sub">${heroNote}</p></div>${fee ? mark(feeIsPaid) : `<span class="pill empty">End of term</span>`}</div>`;
+  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? inr0(heroAmount) : "None"}</p><p class="sub">${heroNote}</p></div></div>`;
   html += `<table>`;
   if (opening) {
-    html += `<tr><td>Security deposit, 2 months</td><td class="num">${inr0(116000)}</td></tr>
-      <tr><td>Advance, September licence fee</td><td class="num">${inr0(58000)}</td></tr>`;
+    html += `<tr><td>Security deposit, 2 months</td><td class="num">${mark(true)} ${inr0(116000)}</td></tr>
+      <tr><td>Advance, September licence fee</td><td class="num">${mark(true)} ${inr0(58000)}</td></tr>`;
   } else {
-    html += `<tr><td>Monthly rent</td><td class="num">${fee ? inr0(fee) : "—"}</td></tr>`;
+    html += `<tr><td>Monthly rent</td><td class="num">${fee ? `${mark(feeIsPaid)} ${inr0(fee)}` : "—"}</td></tr>`;
   }
   if (hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
