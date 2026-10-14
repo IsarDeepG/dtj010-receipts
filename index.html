@@ -175,6 +175,11 @@ const FILES = {
     ["DTJ010_DLF_Maintenance_Oct2026.pdf","DLF maintenance bill","Oct 2026 · MB/2026-27/2106"]
   ]
 };
+const MISC = {
+  "2026-10": [
+    ["DTJ010_AC_Check_Oct2026.jpg","AC check","Urban Company · 14 Oct 2026 · Rs 308.00 · Ref 628743289171", 308]
+  ]
+};
 const seed = {
   selected: "2026-10",
   mode: "view",
@@ -237,6 +242,13 @@ function fileList(id) {
   const files = FILES[id] || [];
   if (!files.length) return `<p class="note">No files for this month yet.</p>`;
   return files.map(([href, name, meta]) => `<div class="file"><div><b>${name}</b><div class="meta">${meta}</div></div><div class="actions"><a href="${href}" target="_blank" rel="noopener">View</a><a class="primary" href="${href}" download>Download</a></div></div>`).join("");
+}
+function miscList(id) {
+  const items = MISC[id] || [];
+  if (!items.length) return `<p class="note">No miscellaneous expenses this month.</p>`;
+  const total = items.reduce((s, row) => s + (Number(row[3]) || 0), 0);
+  const rows = items.map(([href, name, meta]) => `<div class="file"><div><b>${name}</b><div class="meta">${meta}</div></div><div class="actions"><a href="${href}" target="_blank" rel="noopener">View</a><a class="primary" href="${href}" download>Download</a></div></div>`).join("");
+  return rows + `<p class="note">Total ${inr(total)}</p>`;
 }
 function paintDetail() {
   const id = state.selected;
@@ -333,6 +345,11 @@ function paintDetail() {
     const note = document.getElementById("saved");
     if (note) note.textContent = "Saved in this browser.";
   };
+  if (!gate) {
+    const misc = document.createElement("div");
+    misc.innerHTML = `<h2 class="files-head">Miscellaneous expenses</h2>${miscList(id)}`;
+    document.getElementById("detail").appendChild(misc);
+  }
 }
 function paint() {
   document.getElementById("viewBtn").classList.toggle("on", state.mode !== "edit");
