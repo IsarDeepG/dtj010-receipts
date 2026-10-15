@@ -157,7 +157,7 @@
 <script>
 const USER = "isar.gangwani@gmail.com";
 const PASS = "DLFpassword";
-const KEY = "dtj010-portal-v2";
+const KEY = "dtj010-portal-v3";
 const MONTHS = [
   ["2026-09","Sep","Sep 2026"],["2026-10","Oct","Oct 2026"],["2026-11","Nov","Nov 2026"],
   ["2026-12","Dec","Dec 2026"],["2027-01","Jan","Jan 2027"],["2027-02","Feb","Feb 2027"],
@@ -170,7 +170,7 @@ const FILES = {
   ],
   "2026-10": [
     ["DTJ010_Email_Oct2026.pdf","Email to the vendor","To Rizwanqureshi435@gmail.com"],
-    ["DTJ010_Invoice_Oct2026.pdf","Invoice","Rs 13,958.82"],
+    ["DTJ010_Invoice_Oct2026.pdf","Invoice","Rs 2,944.97 · corrected"],
     ["DTJ010_DLF_Electricity_Sep2026.pdf","DLF electricity bill","Sep 2026 · EB/2026-27/1775"],
     ["DTJ010_DLF_Maintenance_Oct2026.pdf","DLF maintenance bill","Oct 2026 · MB/2026-27/2106"]
   ]
@@ -188,8 +188,10 @@ const seed = {
   receipts: { security: 116000, advance: 58000, fees: 58000 },
   months: {
     "2026-10": {
-      elec: 1476.64, elecLabel: "Electricity, Sep usage after 10-day cut",
-      maint: 12482.18, maintLabel: "Maintenance, Oct DLF bill",
+      elec: 0, elecLabel: "Electricity",
+      maint: 12481.20, maintLabel: "October maintenance, GST included",
+      excess: 9536.23,
+      payableAmount: 2944.97,
       status: "Unpaid", paid: 0, paidOn: "", ref: ""
     }
   }
@@ -222,7 +224,7 @@ function monthStatus(id) {
   if (bill && !billPaid(m)) return "unpaid";
   return "paid";
 }
-function payable(m) { return (Number(m?.elec) || 0) + (Number(m?.maint) || 0); }
+function payable(m) { return Number(m?.payableAmount) || ((Number(m?.elec) || 0) + (Number(m?.maint) || 0)); }
 
 function paintMonths() {
   document.getElementById("months").innerHTML = MONTHS.map(([id, short]) => {
@@ -264,21 +266,34 @@ function paintDetail() {
   const editing = state.mode === "edit" && authed;
   const gate = state.mode === "edit" && !authed;
   const opening = id === "2026-09";
+  const october = id === "2026-10";
   const dlf = payable(m);
-  const heroAmount = opening ? 174000 : fee + dlf;
-  const heroTitle = opening ? "Opening payment" : (heroAmount ? "Total payment requested" : "No charge");
+  const heroAmount = opening ? 174000 : (october ? 2944.97 : fee + dlf);
+  const heroTitle = opening ? "Opening payment" : (october ? "Amount payable" : (heroAmount ? "Total payment requested" : "No charge"));
   const heroNote = opening
-    ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000."
-    : (hasBill ? `${inr0(fee)} monthly rent + ${inr(dlf)} DLF invoice.` : (fee ? `${inr0(fee)} monthly rent${id >= "2027-04" ? ", split equally between Isar and Lalimma" : ""}. DLF electricity and maintenance are still pending.` : "The term ends on 9 Aug 2027."));
+    ? "Received 8 Sep. Security Rs 1,16,000 plus one month advance Rs 58,000. Licence starts 10 Sep, so September is 20 of 30 days."
+    : (october
+      ? "October maintenance Rs 12,481.20 less September extra Rs 9,536.23."
+      : (hasBill ? `${inr0(fee)} monthly rent + ${inr(dlf)} DLF invoice.` : (fee ? `${inr0(fee)} monthly rent${id >= "2027-04" ? ", split equally between Isar and Lalimma" : ""}. DLF electricity and maintenance are still pending.` : "The term ends on 9 Aug 2027.")));
   const DUE = "(pending at Goertrip Travels Private Limited)";
   const mark = paid => paid
     ? `<span class="pill paid">Paid</span>`
     : `<span class="status"><span class="pill unpaid">Not paid</span><span class="due-note">${DUE}</span></span>`;
-  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? (hasBill && !opening ? inr(heroAmount) : inr0(heroAmount)) : "None"}</p><p class="sub">${heroNote}</p></div></div>`;
+  let html = `<div class="hero"><div><p class="kicker">${label}</p><h2>${heroTitle}</h2><p class="payable">${heroAmount ? (opening ? inr0(heroAmount) : inr(heroAmount)) : "None"}</p><p class="sub">${heroNote}</p></div></div>`;
   html += `<table>`;
   if (opening) {
     html += `<tr><td>Security deposit, 2 months</td><td class="num">${mark(true)} ${inr0(116000)}</td></tr>
-      <tr><td>Advance, September licence fee</td><td class="num">${mark(true)} ${inr0(58000)}</td></tr>`;
+      <tr><td>Advance received, 8 September</td><td class="num">${mark(true)} ${inr0(58000)}</td></tr>
+      <tr><td>Licence fee, 20 of 30 days (58,000 × 20/30)</td><td class="num">${inr(38666.67)}</td></tr>
+      <tr><td>Electricity, 20 of 30 days (2,214.45 × 20/30)</td><td class="num">${inr(1476.30)}</td></tr>
+      <tr><td>Maintenance, 20 of 30 days, GST included (12,481.20 × 20/30)</td><td class="num">${inr(8320.80)}</td></tr>
+      <tr><td>Total due, 10–30 September</td><td class="num">${inr(48463.77)}</td></tr>
+      <tr><td>Extra still with licensor</td><td class="num">${inr(9536.23)}</td></tr>`;
+  } else if (october) {
+    html += `<tr><td>Monthly rent</td><td class="num">${mark(feeIsPaid)} ${inr0(fee)}</td></tr>
+      <tr><td>October maintenance, GST included, arrears excluded</td><td class="num">${inr(12481.20)}</td></tr>
+      <tr><td>Less: extra from September</td><td class="num">${inr(9536.23)}</td></tr>
+      <tr><td>Amount payable</td><td class="num">${mark(billIsPaid)} ${inr(2944.97)}</td></tr>`;
   } else {
     html += `<tr><td>Monthly rent</td><td class="num">${fee ? `${mark(feeIsPaid)} ${inr0(fee)}` : "—"}</td></tr>`;
     if (id >= "2027-04" && fee) {
@@ -286,11 +301,11 @@ function paintDetail() {
         <tr><td class="split">Lalimma Gangwani</td><td class="num">${inr0(fee / 2)}</td></tr>`;
     }
   }
-  if (hasBill) {
+  if (!opening && !october && hasBill) {
     html += `<tr><td>${m.elecLabel || "Electricity"}</td><td class="num">${inr(m.elec)}</td></tr>
       <tr><td>${m.maintLabel || "DLF maintenance"}</td><td class="num">${inr(m.maint)}</td></tr>
       <tr><td>DLF invoice</td><td class="num">${mark(billIsPaid)} ${inr(payable(m))}</td></tr>`;
-  } else if (id !== "2026-09") {
+  } else if (!opening && !october) {
     html += `<tr><td>Electricity</td><td class="num"><span class="pill pending">Pending</span></td></tr>
       <tr><td>DLF maintenance</td><td class="num"><span class="pill pending">Pending</span></td></tr>`;
   }
